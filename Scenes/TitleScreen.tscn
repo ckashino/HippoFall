@@ -1,0 +1,46 @@
+[gd_scene load_steps=5 format=2]
+
+[ext_resource path="res://UI_ASSETS/BaseTheme.tres" type="Theme" id=1]
+[ext_resource path="res://UI_ASSETS/NewHiScore.ttf" type="DynamicFontData" id=2]
+[ext_resource path="res://Scripts/TitleScreen.gd" type="Script" id=3]
+
+[sub_resource type="DynamicFont" id=1]
+size = 64
+font_data = ExtResource( 2 )
+
+[node name="TitleScreen" type="Node2D"]
+script = ExtResource( 3 )
+
+[node name="ColorRect" type="ColorRect" parent="."]
+margin_right = 1024.0
+margin_bottom = 600.0
+color = Color( 0.701961, 0.505882, 0.505882, 1 )
+
+[node name="Control" type="Control" parent="."]
+margin_right = 1024.0
+margin_bottom = 600.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Control"]
+margin_left = 100.0
+margin_top = 100.0
+margin_right = 924.0
+margin_bottom = 600.0
+custom_constants/separation = 120
+
+[node name="TitleLabel" type="Label" parent="Control/VBoxContainer"]
+margin_right = 824.0
+margin_bottom = 56.0
+theme = ExtResource( 1 )
+custom_fonts/font = SubResource( 1 )
+text = "Dumbo Catch"
+align = 1
+valign = 1
+
+[node name="StartButton" type="Button" parent="Control/VBoxContainer"]
+margin_top = 176.0
+margin_right = 824.0
+margin_bottom = 204.0
+theme = ExtResource( 1 )
+text = "START"
+
+[connection signal="pressed" from="Control/VBoxContainer/StartButton" to="." method="_on_StartButton_pressed"]
