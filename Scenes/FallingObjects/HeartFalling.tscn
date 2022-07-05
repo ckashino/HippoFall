@@ -1,10 +1,21 @@
-[gd_scene load_steps=3 format=2]
+[gd_scene load_steps=5 format=2]
 
 [ext_resource path="res://Scenes/FallingObjects/BaseFallingObj.tscn" type="PackedScene" id=1]
 [ext_resource path="res://Scripts/FallingObjs/HeartFalling.gd" type="Script" id=2]
+
+[sub_resource type="Shader" id=1]
+code = "shader_type canvas_item;
+
+void fragment() {
+	COLOR = vec4(0.2, 0.1, 0.3, 1);
+}"
+
+[sub_resource type="ShaderMaterial" id=2]
+shader = SubResource( 1 )
 
 [node name="HeartFalling" instance=ExtResource( 1 )]
 script = ExtResource( 2 )
 
 [node name="Sprite" parent="RigidBody2D" index="0"]
 modulate = Color( 0.870588, 0.243137, 0.243137, 1 )
+material = SubResource( 2 )

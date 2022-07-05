@@ -2,7 +2,7 @@ extends "res://Scripts/FallingObjs/BaseFallingObj.gd"
 
 
 func on_catch():
-	print("THIS IS A HEART")
+	.add_points()
 	queue_free()
 
 func on_drop():

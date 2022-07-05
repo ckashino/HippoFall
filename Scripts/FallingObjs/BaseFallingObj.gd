@@ -2,9 +2,11 @@ extends Node2D
 
 export var points = 1
 
+onready var globals = get_node("/root/GlobalScript")
+
 func _ready():
 	$RigidBody2D.contact_monitor = true
-	$RigidBody2D.contacts_reported = 10
+	$RigidBody2D.contacts_reported = 1
 	on_start()
 
 func _physics_process(delta):
@@ -22,10 +24,12 @@ func on_catch():
 func on_drop():
 	pass
 
+func add_points():
+	var current_score = globals.get("score")
+	globals.set("score", current_score + points)
 
 func _on_RigidBody2D_body_shape_entered(body_rid, body, body_shape_index, local_shape_index):
 	if body.is_in_group("player"):
 		on_catch()
-		print("TESR")
 	else:
 		on_drop()
