@@ -1,13 +1,19 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=6 format=2]
 
 [ext_resource path="res://Scenes/Player.tscn" type="PackedScene" id=1]
 [ext_resource path="res://icon.png" type="Texture" id=2]
 [ext_resource path="res://Scenes/FallingObjects/HeartFalling.tscn" type="PackedScene" id=3]
+[ext_resource path="res://Scripts/GameLogic.gd" type="Script" id=4]
 
 [sub_resource type="RectangleShape2D" id=1]
 extents = Vector2( 345, 21.5 )
 
 [node name="MainGameNode" type="Node2D"]
+script = ExtResource( 4 )
+__meta__ = {
+"_edit_horizontal_guides_": [  ],
+"_edit_vertical_guides_": [ 167.0, 857.0 ]
+}
 
 [node name="StaticBody2D" type="StaticBody2D" parent="."]
 position = Vector2( 0, 522 )
@@ -27,3 +33,5 @@ position = Vector2( 441, 345 )
 
 [node name="HeartFalling" parent="." instance=ExtResource( 3 )]
 position = Vector2( 452, 155 )
+
+[node name="FallingObjs" type="Node2D" parent="."]

@@ -5,6 +5,7 @@ const WALK_SPEED = 200
 const JUMP_SPEED = 200
 
 var velocity = Vector2()
+var can_dash = true
 
 func _physics_process(delta):
 	
