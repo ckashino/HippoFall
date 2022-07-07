@@ -17,6 +17,13 @@ var timer = 0
 var rate = 2
 var spawn_count = 0
 
+var start_pos = Vector2(-50, 100)
+var launch_min = Vector2(100, -100)
+var launch_max = Vector2(250, -100)
+
+var falling_objs = [heart_obj, bomb_obj, melon_obj, skull_obj]
+
+# debugging vars
 export var debug_rate = 1
 export var toggle_debug: bool = false
 export var launch_pos_debug = Vector2(0, 0)
@@ -56,6 +63,8 @@ func _physics_process(delta):
 				var tween = debug_fall.get_node("Tween")
 				tween.interpolate_callback(debug_fall, debug_rate * 10, "queue_free")
 				tween.start()
-				print("TEST")
 				timer = 0
 		
+
+func get_object_index():
+	pass

@@ -21,7 +21,8 @@ script = ExtResource( 4 )
 __meta__ = {
 "_edit_horizontal_guides_": [  ]
 }
-launch_force = Vector2( 300, 0 )
+launch_pos_debug = Vector2( -50, 100 )
+launch_force = Vector2( 100, -100 )
 
 [node name="StaticBody2D" type="StaticBody2D" parent="."]
 position = Vector2( 0, 522 )
