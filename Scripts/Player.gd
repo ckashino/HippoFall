@@ -1,11 +1,13 @@
 extends KinematicBody2D
 
-const GRAVITY = 400
+const GRAVITY = 900
 const WALK_SPEED = 200
-const JUMP_SPEED = 200
+const JUMP_SPEED = 400
 const DASH_SPEED = 1000
 
 var velocity = Vector2()
+
+var can_jump
 
 var can_dash = true
 var dashing = false
@@ -39,6 +41,8 @@ func _physics_process(delta):
 		can_dash = false
 		velocity.x = sign(velocity.x) * DASH_SPEED
 
-	if is_on_floor():
-		if Input.is_action_pressed("jump"):
-			velocity.y = -JUMP_SPEED
+	if Input.is_action_pressed("jump") and can_jump:
+		can_jump = false
+		velocity.y = -JUMP_SPEED
+	if is_on_floor() and !can_jump:
+		can_jump = true
