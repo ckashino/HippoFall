@@ -6,7 +6,8 @@ func on_catch():
 	queue_free()
 
 func on_drop():
-	globals.health -= 1	
+	globals.health -= 1
+	.explode()	
 	queue_free()
 
 func on_start():

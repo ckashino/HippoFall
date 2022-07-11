@@ -1,6 +1,7 @@
 extends Node2D
 
 export var points = 1
+export var explode_color: Color = Color(1, 1, 1)
 
 onready var globals = get_node("/root/GlobalScript")
 
@@ -35,3 +36,6 @@ func _on_RigidBody2D_body_shape_entered(body_rid, body, body_shape_index, local_
 		on_catch()
 	else:
 		on_drop()
+
+func explode():
+	get_parent().get_parent().spawn_explosion($RigidBody2D.global_position, explode_color)

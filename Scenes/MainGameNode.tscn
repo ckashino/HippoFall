@@ -1,13 +1,40 @@
-[gd_scene load_steps=10 format=2]
+[gd_scene load_steps=23 format=2]
 
 [ext_resource path="res://Scenes/Player.tscn" type="PackedScene" id=1]
-[ext_resource path="res://icon.png" type="Texture" id=2]
+[ext_resource path="res://assets/square_particle.png" type="Texture" id=2]
 [ext_resource path="res://Scripts/DeathText.gd" type="Script" id=3]
 [ext_resource path="res://Scripts/GameLogic.gd" type="Script" id=4]
 [ext_resource path="res://UI_ASSETS/NewHiScore.ttf" type="DynamicFontData" id=5]
+[ext_resource path="res://grass_shader.gdshader" type="Shader" id=6]
+
+[sub_resource type="SphereMesh" id=19]
+
+[sub_resource type="Shader" id=9]
+code = "shader_type canvas_item;
+uniform sampler2D cloud_noise;
+
+void fragment() {
+	vec4 layer1 = (COLOR * 0.9) * smoothstep(texture(cloud_noise, vec2(UV.x + TIME * 0.02, UV.y)).x, 0.55, 1);
+	vec4 layer2 = (COLOR * 0.05) * smoothstep(texture(cloud_noise, vec2(UV.x + TIME * 0.02, UV.y)).x, 0.52, 1);
+	vec4 layer3 = (COLOR * 1.0) * smoothstep(texture(cloud_noise, vec2(UV.x + TIME * 0.02, UV.y)).x, 0.4, 1);
+	
+	COLOR = layer1 + layer2 + layer3;
+}"
+
+[sub_resource type="OpenSimplexNoise" id=12]
+period = 45.3
+persistence = 0.0
+
+[sub_resource type="NoiseTexture" id=11]
+seamless = true
+noise = SubResource( 12 )
+
+[sub_resource type="ShaderMaterial" id=10]
+shader = SubResource( 9 )
+shader_param/cloud_noise = SubResource( 11 )
 
 [sub_resource type="RectangleShape2D" id=1]
-extents = Vector2( 345, 21.5 )
+extents = Vector2( 345, 26.25 )
 
 [sub_resource type="DynamicFont" id=2]
 size = 32
@@ -21,6 +48,30 @@ font_data = ExtResource( 5 )
 size = 64
 font_data = ExtResource( 5 )
 
+[sub_resource type="ShaderMaterial" id=15]
+shader = ExtResource( 6 )
+
+[sub_resource type="CubeMesh" id=13]
+
+[sub_resource type="ShaderMaterial" id=16]
+shader = ExtResource( 6 )
+
+[sub_resource type="ShaderMaterial" id=17]
+shader = ExtResource( 6 )
+
+[sub_resource type="ShaderMaterial" id=18]
+shader = ExtResource( 6 )
+
+[sub_resource type="Shader" id=22]
+code = "shader_type canvas_item;
+
+void vertex() {
+	VERTEX = VERTEX + vec2(10.0 * sin(TIME * 10.0), 10.0 * cos(TIME * 5.0));
+}"
+
+[sub_resource type="ShaderMaterial" id=21]
+shader = SubResource( 22 )
+
 [node name="MainGameNode" type="Node2D"]
 script = ExtResource( 4 )
 __meta__ = {
@@ -28,18 +79,41 @@ __meta__ = {
 }
 launch_pos_debug = Vector2( -50, 100 )
 
+[node name="ColorRect" type="ColorRect" parent="."]
+margin_left = -3.0
+margin_right = 1021.0
+margin_bottom = 601.0
+color = Color( 0.101961, 0.545098, 0.698039, 1 )
+
+[node name="MeshInstance2D" type="MeshInstance2D" parent="."]
+modulate = Color( 0.407843, 1, 0, 1 )
+position = Vector2( 128, 65 )
+scale = Vector2( 62.5706, 62.5706 )
+mesh = SubResource( 19 )
+
+[node name="ColorRect2" type="ColorRect" parent="."]
+material = SubResource( 10 )
+margin_right = 1023.0
+margin_bottom = 162.0
+
 [node name="StaticBody2D" type="StaticBody2D" parent="."]
-position = Vector2( 0, 522 )
+position = Vector2( 512, 531 )
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D"]
-position = Vector2( 514, -0.5 )
+position = Vector2( 0, -4.75 )
 shape = SubResource( 1 )
 
 [node name="Sprite" type="Sprite" parent="StaticBody2D"]
-position = Vector2( 512, 0 )
+modulate = Color( 0.666667, 0.462745, 0.109804, 1 )
+position = Vector2( 71, 0 )
+scale = Vector2( 138, 10.8 )
 texture = ExtResource( 2 )
-region_enabled = true
-region_rect = Rect2( 0, 0, 690, 40 )
+
+[node name="Sprite2" type="Sprite" parent="StaticBody2D"]
+modulate = Color( 0.407843, 0.286275, 0.0745098, 1 )
+position = Vector2( 71, 60.16 )
+scale = Vector2( 138, 13.72 )
+texture = ExtResource( 2 )
 
 [node name="Player" parent="." instance=ExtResource( 1 )]
 position = Vector2( 514, 462 )
@@ -51,6 +125,7 @@ margin_right = 1024.0
 margin_bottom = 54.0
 
 [node name="Label" type="Label" parent="UI"]
+modulate = Color( 0, 0, 0, 1 )
 margin_left = 30.0
 margin_right = 204.0
 margin_bottom = 59.0
@@ -78,3 +153,807 @@ text = "GAME OVER"
 align = 1
 valign = 1
 script = ExtResource( 3 )
+
+[node name="Node2D" type="Node2D" parent="UI"]
+position = Vector2( 85, 9 )
+__meta__ = {
+"_edit_group_": true
+}
+
+[node name="grass nodes" type="Node2D" parent="UI/Node2D"]
+material = SubResource( 15 )
+position = Vector2( -84, 0 )
+__meta__ = {
+"_edit_group_": true
+}
+
+[node name="MeshInstance2D2" type="MeshInstance2D" parent="UI/Node2D/grass nodes"]
+use_parent_material = true
+position = Vector2( 171, 512 )
+scale = Vector2( 2.74999, 30.5 )
+mesh = SubResource( 13 )
+
+[node name="MeshInstance2D" type="MeshInstance2D" parent="UI/Node2D/grass nodes"]
+use_parent_material = true
+position = Vector2( 178, 505 )
+scale = Vector2( 2.74999, 38.75 )
+mesh = SubResource( 13 )
+
+[node name="MeshInstance2D3" type="MeshInstance2D" parent="UI/Node2D/grass nodes"]
+use_parent_material = true
+position = Vector2( 185.75, 515.25 )
+scale = Vector2( 2.74999, 27.25 )
+mesh = SubResource( 13 )
+
+[node name="MeshInstance2D4" type="MeshInstance2D" parent="UI/Node2D/grass nodes"]
+use_parent_material = true
+position = Vector2( 192.75, 508.875 )
+scale = Vector2( 2.74999, 34.875 )
+mesh = SubResource( 13 )
+
+[node name="grass nodes2" type="Node2D" parent="UI/Node2D"]
+material = SubResource( 16 )
+position = Vector2( -54, 0 )
+__meta__ = {
+"_edit_group_": true
+}
+
+[node name="MeshInstance2D2" type="MeshInstance2D" parent="UI/Node2D/grass nodes2"]
+use_parent_material = true
+position = Vector2( 171, 509.25 )
+scale = Vector2( 2.74999, 33.25 )
+mesh = SubResource( 13 )
+
+[node name="MeshInstance2D" type="MeshInstance2D" parent="UI/Node2D/grass nodes2"]
+use_parent_material = true
+position = Vector2( 178, 515.375 )
+scale = Vector2( 2.74999, 28.375 )
+mesh = SubResource( 13 )
+
+[node name="MeshInstance2D3" type="MeshInstance2D" parent="UI/Node2D/grass nodes2"]
+use_parent_material = true
+position = Vector2( 185.75, 499.75 )
+scale = Vector2( 2.74999, 42.75 )
+mesh = SubResource( 13 )
+
+[node name="MeshInstance2D4" type="MeshInstance2D" parent="UI/Node2D/grass nodes2"]
+use_parent_material = true
+position = Vector2( 192.75, 508.875 )
+scale = Vector2( 2.74999, 34.875 )
+mesh = SubResource( 13 )
+
+[node name="grass nodes3" type="Node2D" parent="UI/Node2D"]
+material = SubResource( 17 )
+position = Vector2( -26, 0 )
+__meta__ = {
+"_edit_group_": true
+}
+
+[node name="MeshInstance2D2" type="MeshInstance2D" parent="UI/Node2D/grass nodes3"]
+use_parent_material = true
+position = Vector2( 171.375, 498.75 )
+scale = Vector2( 2.375, 43.75 )
+mesh = SubResource( 13 )
+
+[node name="MeshInstance2D" type="MeshInstance2D" parent="UI/Node2D/grass nodes3"]
+use_parent_material = true
+position = Vector2( 178, 505 )
+scale = Vector2( 2.74999, 38.75 )
+mesh = SubResource( 13 )
+
+[node name="MeshInstance2D3" type="MeshInstance2D" parent="UI/Node2D/grass nodes3"]
+use_parent_material = true
+position = Vector2( 186, 516 )
+scale = Vector2( 2.74999, 27.25 )
+mesh = SubResource( 13 )
+
+[node name="MeshInstance2D4" type="MeshInstance2D" parent="UI/Node2D/grass nodes3"]
+use_parent_material = true
+position = Vector2( 192, 504.875 )
+scale = Vector2( 2, 38.875 )
+mesh = SubResource( 13 )
+
+[node name="grass nodes4" type="Node2D" parent="UI/Node2D"]
+material = SubResource( 18 )
+__meta__ = {
+"_edit_group_": true
+}
+
+[node name="MeshInstance2D2" type="MeshInstance2D" parent="UI/Node2D/grass nodes4"]
+use_parent_material = true
+position = Vector2( 171.875, 503.25 )
+scale = Vector2( 1.875, 39.25 )
+mesh = SubResource( 13 )
+
+[node name="MeshInstance2D" type="MeshInstance2D" parent="UI/Node2D/grass nodes4"]
+use_parent_material = true
+position = Vector2( 178, 515.375 )
+scale = Vector2( 2.74999, 28.375 )
+mesh = SubResource( 13 )
+
+[node name="MeshInstance2D3" type="MeshInstance2D" parent="UI/Node2D/grass nodes4"]
+use_parent_material = true
+position = Vector2( 185, 501 )
+scale = Vector2( 2.24999, 43.25 )
+mesh = SubResource( 13 )
+
+[node name="MeshInstance2D4" type="MeshInstance2D" parent="UI/Node2D/grass nodes4"]
+use_parent_material = true
+position = Vector2( 194, 508 )
+scale = Vector2( 4.5, 35.875 )
+mesh = SubResource( 13 )
+
+[node name="Node2D2" type="Node2D" parent="UI"]
+position = Vector2( 201, 9 )
+__meta__ = {
+"_edit_group_": true
+}
+
+[node name="grass nodes" type="Node2D" parent="UI/Node2D2"]
+material = SubResource( 15 )
+position = Vector2( -84, 0 )
+__meta__ = {
+"_edit_group_": true
+}
+
+[node name="MeshInstance2D2" type="MeshInstance2D" parent="UI/Node2D2/grass nodes"]
+use_parent_material = true
+position = Vector2( 171, 512 )
+scale = Vector2( 2.74999, 30.5 )
+mesh = SubResource( 13 )
+
+[node name="MeshInstance2D" type="MeshInstance2D" parent="UI/Node2D2/grass nodes"]
+use_parent_material = true
+position = Vector2( 178, 505 )
+scale = Vector2( 2.74999, 38.75 )
+mesh = SubResource( 13 )
+
+[node name="MeshInstance2D3" type="MeshInstance2D" parent="UI/Node2D2/grass nodes"]
+use_parent_material = true
+position = Vector2( 185.75, 515.25 )
+scale = Vector2( 2.74999, 27.25 )
+mesh = SubResource( 13 )
+
+[node name="MeshInstance2D4" type="MeshInstance2D" parent="UI/Node2D2/grass nodes"]
+use_parent_material = true
+position = Vector2( 192.75, 508.875 )
+scale = Vector2( 2.74999, 34.875 )
+mesh = SubResource( 13 )
+
+[node name="grass nodes2" type="Node2D" parent="UI/Node2D2"]
+material = SubResource( 16 )
+position = Vector2( -54, 0 )
+__meta__ = {
+"_edit_group_": true
+}
+
+[node name="MeshInstance2D2" type="MeshInstance2D" parent="UI/Node2D2/grass nodes2"]
+use_parent_material = true
+position = Vector2( 171, 509.25 )
+scale = Vector2( 2.74999, 33.25 )
+mesh = SubResource( 13 )
+
+[node name="MeshInstance2D" type="MeshInstance2D" parent="UI/Node2D2/grass nodes2"]
+use_parent_material = true
+position = Vector2( 178, 515.375 )
+scale = Vector2( 2.74999, 28.375 )
+mesh = SubResource( 13 )
+
+[node name="MeshInstance2D3" type="MeshInstance2D" parent="UI/Node2D2/grass nodes2"]
+use_parent_material = true
+position = Vector2( 185.75, 499.75 )
+scale = Vector2( 2.74999, 42.75 )
+mesh = SubResource( 13 )
+
+[node name="MeshInstance2D4" type="MeshInstance2D" parent="UI/Node2D2/grass nodes2"]
+use_parent_material = true
+position = Vector2( 192.75, 508.875 )
+scale = Vector2( 2.74999, 34.875 )
+mesh = SubResource( 13 )
+
+[node name="grass nodes3" type="Node2D" parent="UI/Node2D2"]
+material = SubResource( 17 )
+position = Vector2( -26, 0 )
+__meta__ = {
+"_edit_group_": true
+}
+
+[node name="MeshInstance2D2" type="MeshInstance2D" parent="UI/Node2D2/grass nodes3"]
+use_parent_material = true
+position = Vector2( 171.375, 498.75 )
+scale = Vector2( 2.375, 43.75 )
+mesh = SubResource( 13 )
+
+[node name="MeshInstance2D" type="MeshInstance2D" parent="UI/Node2D2/grass nodes3"]
+use_parent_material = true
+position = Vector2( 178, 505 )
+scale = Vector2( 2.74999, 38.75 )
+mesh = SubResource( 13 )
+
+[node name="MeshInstance2D3" type="MeshInstance2D" parent="UI/Node2D2/grass nodes3"]
+use_parent_material = true
+position = Vector2( 186, 516 )
+scale = Vector2( 2.74999, 27.25 )
+mesh = SubResource( 13 )
+
+[node name="MeshInstance2D4" type="MeshInstance2D" parent="UI/Node2D2/grass nodes3"]
+use_parent_material = true
+position = Vector2( 192, 504.875 )
+scale = Vector2( 2, 38.875 )
+mesh = SubResource( 13 )
+
+[node name="grass nodes4" type="Node2D" parent="UI/Node2D2"]
+material = SubResource( 18 )
+__meta__ = {
+"_edit_group_": true
+}
+
+[node name="MeshInstance2D2" type="MeshInstance2D" parent="UI/Node2D2/grass nodes4"]
+use_parent_material = true
+position = Vector2( 171.875, 503.25 )
+scale = Vector2( 1.875, 39.25 )
+mesh = SubResource( 13 )
+
+[node name="MeshInstance2D" type="MeshInstance2D" parent="UI/Node2D2/grass nodes4"]
+use_parent_material = true
+position = Vector2( 178, 515.375 )
+scale = Vector2( 2.74999, 28.375 )
+mesh = SubResource( 13 )
+
+[node name="MeshInstance2D3" type="MeshInstance2D" parent="UI/Node2D2/grass nodes4"]
+use_parent_material = true
+position = Vector2( 185, 501 )
+scale = Vector2( 2.24999, 43.25 )
+mesh = SubResource( 13 )
+
+[node name="MeshInstance2D4" type="MeshInstance2D" parent="UI/Node2D2/grass nodes4"]
+use_parent_material = true
+position = Vector2( 194, 508 )
+scale = Vector2( 4.5, 35.875 )
+mesh = SubResource( 13 )
+
+[node name="Node2D3" type="Node2D" parent="UI"]
+position = Vector2( 827, 9 )
+scale = Vector2( -1, 1 )
+__meta__ = {
+"_edit_group_": true
+}
+
+[node name="grass nodes" type="Node2D" parent="UI/Node2D3"]
+material = SubResource( 15 )
+position = Vector2( -84, 0 )
+__meta__ = {
+"_edit_group_": true
+}
+
+[node name="MeshInstance2D2" type="MeshInstance2D" parent="UI/Node2D3/grass nodes"]
+use_parent_material = true
+position = Vector2( 171, 512 )
+scale = Vector2( 2.74999, 30.5 )
+mesh = SubResource( 13 )
+
+[node name="MeshInstance2D" type="MeshInstance2D" parent="UI/Node2D3/grass nodes"]
+use_parent_material = true
+position = Vector2( 178, 505 )
+scale = Vector2( 2.74999, 38.75 )
+mesh = SubResource( 13 )
+
+[node name="MeshInstance2D3" type="MeshInstance2D" parent="UI/Node2D3/grass nodes"]
+use_parent_material = true
+position = Vector2( 185.75, 515.25 )
+scale = Vector2( 2.74999, 27.25 )
+mesh = SubResource( 13 )
+
+[node name="MeshInstance2D4" type="MeshInstance2D" parent="UI/Node2D3/grass nodes"]
+use_parent_material = true
+position = Vector2( 192.75, 508.875 )
+scale = Vector2( 2.74999, 34.875 )
+mesh = SubResource( 13 )
+
+[node name="grass nodes2" type="Node2D" parent="UI/Node2D3"]
+material = SubResource( 16 )
+position = Vector2( -54, 0 )
+__meta__ = {
+"_edit_group_": true
+}
+
+[node name="MeshInstance2D2" type="MeshInstance2D" parent="UI/Node2D3/grass nodes2"]
+use_parent_material = true
+position = Vector2( 171, 509.25 )
+scale = Vector2( 2.74999, 33.25 )
+mesh = SubResource( 13 )
+
+[node name="MeshInstance2D" type="MeshInstance2D" parent="UI/Node2D3/grass nodes2"]
+use_parent_material = true
+position = Vector2( 178, 515.375 )
+scale = Vector2( 2.74999, 28.375 )
+mesh = SubResource( 13 )
+
+[node name="MeshInstance2D3" type="MeshInstance2D" parent="UI/Node2D3/grass nodes2"]
+use_parent_material = true
+position = Vector2( 185.75, 499.75 )
+scale = Vector2( 2.74999, 42.75 )
+mesh = SubResource( 13 )
+
+[node name="MeshInstance2D4" type="MeshInstance2D" parent="UI/Node2D3/grass nodes2"]
+use_parent_material = true
+position = Vector2( 192.75, 508.875 )
+scale = Vector2( 2.74999, 34.875 )
+mesh = SubResource( 13 )
+
+[node name="grass nodes3" type="Node2D" parent="UI/Node2D3"]
+material = SubResource( 17 )
+position = Vector2( -26, 0 )
+__meta__ = {
+"_edit_group_": true
+}
+
+[node name="MeshInstance2D2" type="MeshInstance2D" parent="UI/Node2D3/grass nodes3"]
+use_parent_material = true
+position = Vector2( 171.375, 498.75 )
+scale = Vector2( 2.375, 43.75 )
+mesh = SubResource( 13 )
+
+[node name="MeshInstance2D" type="MeshInstance2D" parent="UI/Node2D3/grass nodes3"]
+use_parent_material = true
+position = Vector2( 178, 505 )
+scale = Vector2( 2.74999, 38.75 )
+mesh = SubResource( 13 )
+
+[node name="MeshInstance2D3" type="MeshInstance2D" parent="UI/Node2D3/grass nodes3"]
+use_parent_material = true
+position = Vector2( 186, 516 )
+scale = Vector2( 2.74999, 27.25 )
+mesh = SubResource( 13 )
+
+[node name="MeshInstance2D4" type="MeshInstance2D" parent="UI/Node2D3/grass nodes3"]
+use_parent_material = true
+position = Vector2( 192, 504.875 )
+scale = Vector2( 2, 38.875 )
+mesh = SubResource( 13 )
+
+[node name="grass nodes4" type="Node2D" parent="UI/Node2D3"]
+material = SubResource( 18 )
+__meta__ = {
+"_edit_group_": true
+}
+
+[node name="MeshInstance2D2" type="MeshInstance2D" parent="UI/Node2D3/grass nodes4"]
+use_parent_material = true
+position = Vector2( 171.875, 503.25 )
+scale = Vector2( 1.875, 39.25 )
+mesh = SubResource( 13 )
+
+[node name="MeshInstance2D" type="MeshInstance2D" parent="UI/Node2D3/grass nodes4"]
+use_parent_material = true
+position = Vector2( 178, 515.375 )
+scale = Vector2( 2.74999, 28.375 )
+mesh = SubResource( 13 )
+
+[node name="MeshInstance2D3" type="MeshInstance2D" parent="UI/Node2D3/grass nodes4"]
+use_parent_material = true
+position = Vector2( 185, 501 )
+scale = Vector2( 2.24999, 43.25 )
+mesh = SubResource( 13 )
+
+[node name="MeshInstance2D4" type="MeshInstance2D" parent="UI/Node2D3/grass nodes4"]
+use_parent_material = true
+position = Vector2( 194, 508 )
+scale = Vector2( 4.5, 35.875 )
+mesh = SubResource( 13 )
+
+[node name="Node2D6" type="Node2D" parent="UI"]
+position = Vector2( 594, 114 )
+scale = Vector2( -1, 0.808 )
+__meta__ = {
+"_edit_group_": true
+}
+
+[node name="grass nodes" type="Node2D" parent="UI/Node2D6"]
+material = SubResource( 15 )
+position = Vector2( -84, 0 )
+__meta__ = {
+"_edit_group_": true
+}
+
+[node name="MeshInstance2D2" type="MeshInstance2D" parent="UI/Node2D6/grass nodes"]
+use_parent_material = true
+position = Vector2( 171, 512 )
+scale = Vector2( 2.74999, 30.5 )
+mesh = SubResource( 13 )
+
+[node name="MeshInstance2D" type="MeshInstance2D" parent="UI/Node2D6/grass nodes"]
+use_parent_material = true
+position = Vector2( 178, 505 )
+scale = Vector2( 2.74999, 38.75 )
+mesh = SubResource( 13 )
+
+[node name="MeshInstance2D3" type="MeshInstance2D" parent="UI/Node2D6/grass nodes"]
+use_parent_material = true
+position = Vector2( 185.75, 515.25 )
+scale = Vector2( 2.74999, 27.25 )
+mesh = SubResource( 13 )
+
+[node name="MeshInstance2D4" type="MeshInstance2D" parent="UI/Node2D6/grass nodes"]
+use_parent_material = true
+position = Vector2( 192.75, 508.875 )
+scale = Vector2( 2.74999, 34.875 )
+mesh = SubResource( 13 )
+
+[node name="grass nodes2" type="Node2D" parent="UI/Node2D6"]
+material = SubResource( 16 )
+position = Vector2( -54, 0 )
+__meta__ = {
+"_edit_group_": true
+}
+
+[node name="MeshInstance2D2" type="MeshInstance2D" parent="UI/Node2D6/grass nodes2"]
+use_parent_material = true
+position = Vector2( 171, 509.25 )
+scale = Vector2( 2.74999, 33.25 )
+mesh = SubResource( 13 )
+
+[node name="MeshInstance2D" type="MeshInstance2D" parent="UI/Node2D6/grass nodes2"]
+use_parent_material = true
+position = Vector2( 178, 515.375 )
+scale = Vector2( 2.74999, 28.375 )
+mesh = SubResource( 13 )
+
+[node name="MeshInstance2D3" type="MeshInstance2D" parent="UI/Node2D6/grass nodes2"]
+use_parent_material = true
+position = Vector2( 185.75, 499.75 )
+scale = Vector2( 2.74999, 42.75 )
+mesh = SubResource( 13 )
+
+[node name="MeshInstance2D4" type="MeshInstance2D" parent="UI/Node2D6/grass nodes2"]
+use_parent_material = true
+position = Vector2( 192.75, 508.875 )
+scale = Vector2( 2.74999, 34.875 )
+mesh = SubResource( 13 )
+
+[node name="grass nodes3" type="Node2D" parent="UI/Node2D6"]
+material = SubResource( 17 )
+position = Vector2( -26, 0 )
+__meta__ = {
+"_edit_group_": true
+}
+
+[node name="MeshInstance2D2" type="MeshInstance2D" parent="UI/Node2D6/grass nodes3"]
+use_parent_material = true
+position = Vector2( 171.375, 498.75 )
+scale = Vector2( 2.375, 43.75 )
+mesh = SubResource( 13 )
+
+[node name="MeshInstance2D" type="MeshInstance2D" parent="UI/Node2D6/grass nodes3"]
+use_parent_material = true
+position = Vector2( 178, 505 )
+scale = Vector2( 2.74999, 38.75 )
+mesh = SubResource( 13 )
+
+[node name="MeshInstance2D3" type="MeshInstance2D" parent="UI/Node2D6/grass nodes3"]
+use_parent_material = true
+position = Vector2( 186, 516 )
+scale = Vector2( 2.74999, 27.25 )
+mesh = SubResource( 13 )
+
+[node name="MeshInstance2D4" type="MeshInstance2D" parent="UI/Node2D6/grass nodes3"]
+use_parent_material = true
+position = Vector2( 192, 504.875 )
+scale = Vector2( 2, 38.875 )
+mesh = SubResource( 13 )
+
+[node name="grass nodes4" type="Node2D" parent="UI/Node2D6"]
+material = SubResource( 18 )
+__meta__ = {
+"_edit_group_": true
+}
+
+[node name="MeshInstance2D2" type="MeshInstance2D" parent="UI/Node2D6/grass nodes4"]
+use_parent_material = true
+position = Vector2( 171.875, 503.25 )
+scale = Vector2( 1.875, 39.25 )
+mesh = SubResource( 13 )
+
+[node name="MeshInstance2D" type="MeshInstance2D" parent="UI/Node2D6/grass nodes4"]
+use_parent_material = true
+position = Vector2( 178, 515.375 )
+scale = Vector2( 2.74999, 28.375 )
+mesh = SubResource( 13 )
+
+[node name="MeshInstance2D3" type="MeshInstance2D" parent="UI/Node2D6/grass nodes4"]
+use_parent_material = true
+position = Vector2( 185, 501 )
+scale = Vector2( 2.24999, 43.25 )
+mesh = SubResource( 13 )
+
+[node name="MeshInstance2D4" type="MeshInstance2D" parent="UI/Node2D6/grass nodes4"]
+use_parent_material = true
+position = Vector2( 194, 508 )
+scale = Vector2( 4.5, 35.875 )
+mesh = SubResource( 13 )
+
+[node name="Node2D4" type="Node2D" parent="UI"]
+position = Vector2( 943, 9 )
+scale = Vector2( -1, 1 )
+__meta__ = {
+"_edit_group_": true
+}
+
+[node name="grass nodes" type="Node2D" parent="UI/Node2D4"]
+material = SubResource( 15 )
+position = Vector2( -84, 0 )
+__meta__ = {
+"_edit_group_": true
+}
+
+[node name="MeshInstance2D2" type="MeshInstance2D" parent="UI/Node2D4/grass nodes"]
+use_parent_material = true
+position = Vector2( 171, 512 )
+scale = Vector2( 2.74999, 30.5 )
+mesh = SubResource( 13 )
+
+[node name="MeshInstance2D" type="MeshInstance2D" parent="UI/Node2D4/grass nodes"]
+use_parent_material = true
+position = Vector2( 178, 505 )
+scale = Vector2( 2.74999, 38.75 )
+mesh = SubResource( 13 )
+
+[node name="MeshInstance2D3" type="MeshInstance2D" parent="UI/Node2D4/grass nodes"]
+use_parent_material = true
+position = Vector2( 185.75, 515.25 )
+scale = Vector2( 2.74999, 27.25 )
+mesh = SubResource( 13 )
+
+[node name="MeshInstance2D4" type="MeshInstance2D" parent="UI/Node2D4/grass nodes"]
+use_parent_material = true
+position = Vector2( 192.75, 508.875 )
+scale = Vector2( 2.74999, 34.875 )
+mesh = SubResource( 13 )
+
+[node name="grass nodes2" type="Node2D" parent="UI/Node2D4"]
+material = SubResource( 16 )
+position = Vector2( -54, 0 )
+__meta__ = {
+"_edit_group_": true
+}
+
+[node name="MeshInstance2D2" type="MeshInstance2D" parent="UI/Node2D4/grass nodes2"]
+use_parent_material = true
+position = Vector2( 171, 509.25 )
+scale = Vector2( 2.74999, 33.25 )
+mesh = SubResource( 13 )
+
+[node name="MeshInstance2D" type="MeshInstance2D" parent="UI/Node2D4/grass nodes2"]
+use_parent_material = true
+position = Vector2( 178, 515.375 )
+scale = Vector2( 2.74999, 28.375 )
+mesh = SubResource( 13 )
+
+[node name="MeshInstance2D3" type="MeshInstance2D" parent="UI/Node2D4/grass nodes2"]
+use_parent_material = true
+position = Vector2( 185.75, 499.75 )
+scale = Vector2( 2.74999, 42.75 )
+mesh = SubResource( 13 )
+
+[node name="MeshInstance2D4" type="MeshInstance2D" parent="UI/Node2D4/grass nodes2"]
+use_parent_material = true
+position = Vector2( 192.75, 508.875 )
+scale = Vector2( 2.74999, 34.875 )
+mesh = SubResource( 13 )
+
+[node name="grass nodes3" type="Node2D" parent="UI/Node2D4"]
+material = SubResource( 17 )
+position = Vector2( -26, 0 )
+__meta__ = {
+"_edit_group_": true
+}
+
+[node name="MeshInstance2D2" type="MeshInstance2D" parent="UI/Node2D4/grass nodes3"]
+use_parent_material = true
+position = Vector2( 171.375, 498.75 )
+scale = Vector2( 2.375, 43.75 )
+mesh = SubResource( 13 )
+
+[node name="MeshInstance2D" type="MeshInstance2D" parent="UI/Node2D4/grass nodes3"]
+use_parent_material = true
+position = Vector2( 178, 505 )
+scale = Vector2( 2.74999, 38.75 )
+mesh = SubResource( 13 )
+
+[node name="MeshInstance2D3" type="MeshInstance2D" parent="UI/Node2D4/grass nodes3"]
+use_parent_material = true
+position = Vector2( 186, 516 )
+scale = Vector2( 2.74999, 27.25 )
+mesh = SubResource( 13 )
+
+[node name="MeshInstance2D4" type="MeshInstance2D" parent="UI/Node2D4/grass nodes3"]
+use_parent_material = true
+position = Vector2( 192, 504.875 )
+scale = Vector2( 2, 38.875 )
+mesh = SubResource( 13 )
+
+[node name="grass nodes4" type="Node2D" parent="UI/Node2D4"]
+material = SubResource( 18 )
+__meta__ = {
+"_edit_group_": true
+}
+
+[node name="MeshInstance2D2" type="MeshInstance2D" parent="UI/Node2D4/grass nodes4"]
+use_parent_material = true
+position = Vector2( 171.875, 503.25 )
+scale = Vector2( 1.875, 39.25 )
+mesh = SubResource( 13 )
+
+[node name="MeshInstance2D" type="MeshInstance2D" parent="UI/Node2D4/grass nodes4"]
+use_parent_material = true
+position = Vector2( 178, 515.375 )
+scale = Vector2( 2.74999, 28.375 )
+mesh = SubResource( 13 )
+
+[node name="MeshInstance2D3" type="MeshInstance2D" parent="UI/Node2D4/grass nodes4"]
+use_parent_material = true
+position = Vector2( 185, 501 )
+scale = Vector2( 2.24999, 43.25 )
+mesh = SubResource( 13 )
+
+[node name="MeshInstance2D4" type="MeshInstance2D" parent="UI/Node2D4/grass nodes4"]
+use_parent_material = true
+position = Vector2( 194, 508 )
+scale = Vector2( 4.5, 35.875 )
+mesh = SubResource( 13 )
+
+[node name="Node2D5" type="Node2D" parent="UI"]
+position = Vector2( 711, 130 )
+scale = Vector2( -1, 0.778 )
+__meta__ = {
+"_edit_group_": true
+}
+
+[node name="grass nodes" type="Node2D" parent="UI/Node2D5"]
+material = SubResource( 15 )
+position = Vector2( -84, 0 )
+__meta__ = {
+"_edit_group_": true
+}
+
+[node name="MeshInstance2D2" type="MeshInstance2D" parent="UI/Node2D5/grass nodes"]
+use_parent_material = true
+position = Vector2( 171, 512 )
+scale = Vector2( 2.74999, 30.5 )
+mesh = SubResource( 13 )
+
+[node name="MeshInstance2D" type="MeshInstance2D" parent="UI/Node2D5/grass nodes"]
+use_parent_material = true
+position = Vector2( 178, 505 )
+scale = Vector2( 2.74999, 38.75 )
+mesh = SubResource( 13 )
+
+[node name="MeshInstance2D3" type="MeshInstance2D" parent="UI/Node2D5/grass nodes"]
+use_parent_material = true
+position = Vector2( 185.75, 515.25 )
+scale = Vector2( 2.74999, 27.25 )
+mesh = SubResource( 13 )
+
+[node name="MeshInstance2D4" type="MeshInstance2D" parent="UI/Node2D5/grass nodes"]
+use_parent_material = true
+position = Vector2( 192.75, 508.875 )
+scale = Vector2( 2.74999, 34.875 )
+mesh = SubResource( 13 )
+
+[node name="grass nodes2" type="Node2D" parent="UI/Node2D5"]
+material = SubResource( 16 )
+position = Vector2( -54, 0 )
+__meta__ = {
+"_edit_group_": true
+}
+
+[node name="MeshInstance2D2" type="MeshInstance2D" parent="UI/Node2D5/grass nodes2"]
+use_parent_material = true
+position = Vector2( 171, 509.25 )
+scale = Vector2( 2.74999, 33.25 )
+mesh = SubResource( 13 )
+
+[node name="MeshInstance2D" type="MeshInstance2D" parent="UI/Node2D5/grass nodes2"]
+use_parent_material = true
+position = Vector2( 178, 515.375 )
+scale = Vector2( 2.74999, 28.375 )
+mesh = SubResource( 13 )
+
+[node name="MeshInstance2D3" type="MeshInstance2D" parent="UI/Node2D5/grass nodes2"]
+use_parent_material = true
+position = Vector2( 185.75, 499.75 )
+scale = Vector2( 2.74999, 42.75 )
+mesh = SubResource( 13 )
+
+[node name="MeshInstance2D4" type="MeshInstance2D" parent="UI/Node2D5/grass nodes2"]
+use_parent_material = true
+position = Vector2( 192.75, 508.875 )
+scale = Vector2( 2.74999, 34.875 )
+mesh = SubResource( 13 )
+
+[node name="grass nodes3" type="Node2D" parent="UI/Node2D5"]
+material = SubResource( 17 )
+position = Vector2( -26, 0 )
+__meta__ = {
+"_edit_group_": true
+}
+
+[node name="MeshInstance2D2" type="MeshInstance2D" parent="UI/Node2D5/grass nodes3"]
+use_parent_material = true
+position = Vector2( 171.375, 498.75 )
+scale = Vector2( 2.375, 43.75 )
+mesh = SubResource( 13 )
+
+[node name="MeshInstance2D" type="MeshInstance2D" parent="UI/Node2D5/grass nodes3"]
+use_parent_material = true
+position = Vector2( 178, 505 )
+scale = Vector2( 2.74999, 38.75 )
+mesh = SubResource( 13 )
+
+[node name="MeshInstance2D3" type="MeshInstance2D" parent="UI/Node2D5/grass nodes3"]
+use_parent_material = true
+position = Vector2( 186, 516 )
+scale = Vector2( 2.74999, 27.25 )
+mesh = SubResource( 13 )
+
+[node name="MeshInstance2D4" type="MeshInstance2D" parent="UI/Node2D5/grass nodes3"]
+use_parent_material = true
+position = Vector2( 192, 504.875 )
+scale = Vector2( 2, 38.875 )
+mesh = SubResource( 13 )
+
+[node name="grass nodes4" type="Node2D" parent="UI/Node2D5"]
+material = SubResource( 18 )
+__meta__ = {
+"_edit_group_": true
+}
+
+[node name="MeshInstance2D2" type="MeshInstance2D" parent="UI/Node2D5/grass nodes4"]
+use_parent_material = true
+position = Vector2( 171.875, 503.25 )
+scale = Vector2( 1.875, 39.25 )
+mesh = SubResource( 13 )
+
+[node name="MeshInstance2D" type="MeshInstance2D" parent="UI/Node2D5/grass nodes4"]
+use_parent_material = true
+position = Vector2( 178, 515.375 )
+scale = Vector2( 2.74999, 28.375 )
+mesh = SubResource( 13 )
+
+[node name="MeshInstance2D3" type="MeshInstance2D" parent="UI/Node2D5/grass nodes4"]
+use_parent_material = true
+position = Vector2( 185, 501 )
+scale = Vector2( 2.24999, 43.25 )
+mesh = SubResource( 13 )
+
+[node name="MeshInstance2D4" type="MeshInstance2D" parent="UI/Node2D5/grass nodes4"]
+use_parent_material = true
+position = Vector2( 194, 508 )
+scale = Vector2( 4.5, 35.875 )
+mesh = SubResource( 13 )
+
+[node name="Sprite" type="Sprite" parent="."]
+modulate = Color( 0, 0, 0, 1 )
+material = SubResource( 21 )
+position = Vector2( 198, 454 )
+texture = ExtResource( 2 )
+
+[node name="Sprite2" type="Sprite" parent="."]
+modulate = Color( 0, 0, 0, 1 )
+material = SubResource( 21 )
+position = Vector2( 222, 429 )
+scale = Vector2( -1, 1 )
+texture = ExtResource( 2 )
+
+[node name="Sprite3" type="Sprite" parent="."]
+modulate = Color( 0, 0, 0, 1 )
+material = SubResource( 21 )
+position = Vector2( 758, 418 )
+scale = Vector2( -1, 1 )
+texture = ExtResource( 2 )
+
+[node name="Sprite4" type="Sprite" parent="."]
+modulate = Color( 0, 0, 0, 1 )
+material = SubResource( 21 )
+position = Vector2( 782, 393 )
+texture = ExtResource( 2 )

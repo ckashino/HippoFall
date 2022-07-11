@@ -32,7 +32,7 @@ margin_right = 824.0
 margin_bottom = 56.0
 theme = ExtResource( 1 )
 custom_fonts/font = SubResource( 1 )
-text = "Dumbo Catch"
+text = "Hippo Catch"
 align = 1
 valign = 1
 

@@ -14,7 +14,10 @@ var dashing = false
 var dash_duration = 0.2
 var dash_timer = 0
 
+var dash_particles = preload("res://Scenes/DashExplosion.tscn")
 
+func _ready():
+	$AnimatedSprite.playing = true
 
 func _physics_process(delta):
 	
@@ -34,12 +37,24 @@ func _physics_process(delta):
 		if dash_timer > dash_duration:
 			dashing = false
 			can_dash = true
+			$AnimatedSprite.speed_scale = 2.5
 			dash_timer = 0
-
+			
 	if Input.is_action_pressed("dash") and !dashing:
 		dashing = true
 		can_dash = false
+		$AnimatedSprite.speed_scale = 8
 		velocity.x = sign(velocity.x) * DASH_SPEED
+		var particles = dash_particles.instance()
+		particles.get_node("CPUParticles2D").direction.x = -1 * sign(velocity.x)
+		particles.position = global_position
+		get_parent().add_child(particles)
+
+	if abs(velocity.x) > 0:
+		$AnimatedSprite.animation = "walking"
+		$AnimatedSprite.scale.x = abs($AnimatedSprite.scale.x) * sign(velocity.x)
+	else:
+		$AnimatedSprite.animation = "default"
 
 	if Input.is_action_pressed("jump") and can_jump:
 		can_jump = false

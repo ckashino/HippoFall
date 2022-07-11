@@ -9,6 +9,7 @@ var heart_obj = preload("res://Scenes/FallingObjects/HeartFalling.tscn")
 var bomb_obj = preload("res://Scenes/FallingObjects/BombFalling.tscn")
 var melon_obj = preload("res://Scenes/FallingObjects/MelonFalling.tscn")
 var skull_obj = preload("res://Scenes/FallingObjects/SkullFalling.tscn")
+var explosion = preload("res://Scenes/ParticleExplosion.tscn")
 
 onready var score_label = $UI/Label
 onready var health_label = $UI/Health
@@ -103,17 +104,24 @@ func launch_spawn(object):
 	
 	object.position = launch_pos
 	object.get_node("RigidBody2D").apply_central_impulse(launch_force)
+	object.get_node("RigidBody2D").angular_velocity = rand_range(-50, 50)
 	$FallingObjs.add_child(object)
 
 func get_difficulty():
-	if spawn_count > 10:
-		rate = 1.75
-		return 1
+	if spawn_count > 50:
+		rate = 1.25
+		return 3
 	elif spawn_count > 30:
 		rate = 1.5
 		return 2
-	elif spawn_count > 50:
-		rate = 1.25
-		return 3
+	elif spawn_count > 10:
+		rate = 1.75
+		return 1
 	else:
 		return 0
+
+func spawn_explosion(pos: Vector2, explode_color: Color):
+	var explosion_obj = explosion.instance()
+	explosion_obj.position = pos
+	explosion_obj.get_node("CPUParticles2D").modulate = explode_color
+	add_child(explosion_obj)

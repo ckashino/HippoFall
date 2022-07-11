@@ -6,5 +6,6 @@ func on_catch():
 	queue_free()
 
 func on_drop():
+	explode()
 	queue_free()
 	
