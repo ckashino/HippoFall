@@ -1,4 +1,4 @@
-[gd_scene load_steps=27 format=2]
+[gd_scene load_steps=28 format=2]
 
 [ext_resource path="res://Scenes/Player.tscn" type="PackedScene" id=1]
 [ext_resource path="res://assets/square_particle.png" type="Texture" id=2]
@@ -10,6 +10,7 @@
 [ext_resource path="res://UI_ASSETS/arrow_jump.png" type="Texture" id=8]
 [ext_resource path="res://UI_ASSETS/arrow_boost.png" type="Texture" id=9]
 [ext_resource path="res://UI_ASSETS/arrow_left.png" type="Texture" id=10]
+[ext_resource path="res://Scripts/touch_controls.gd" type="Script" id=11]
 
 [sub_resource type="SphereMesh" id=19]
 
@@ -967,21 +968,25 @@ position = Vector2( 124, 431 )
 scale = Vector2( 0.0875, 0.0875 )
 normal = ExtResource( 7 )
 action = "move_right"
+script = ExtResource( 11 )
 
-[node name="move_right2" type="TouchScreenButton" parent="."]
+[node name="dash" type="TouchScreenButton" parent="."]
 position = Vector2( 909, 431 )
 scale = Vector2( 0.0875, 0.0875 )
 normal = ExtResource( 9 )
 action = "dash"
+script = ExtResource( 11 )
 
-[node name="move_right3" type="TouchScreenButton" parent="."]
+[node name="jump" type="TouchScreenButton" parent="."]
 position = Vector2( 799, 431 )
 scale = Vector2( 0.0875, 0.0875 )
 normal = ExtResource( 8 )
 action = "jump"
+script = ExtResource( 11 )
 
 [node name="move_left" type="TouchScreenButton" parent="."]
 position = Vector2( 1.00001, 431 )
 scale = Vector2( 0.0875, 0.0875 )
 normal = ExtResource( 10 )
 action = "move_left"
+script = ExtResource( 11 )
